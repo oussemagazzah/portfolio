@@ -84,7 +84,13 @@
               Graduate Software Engineer from École Polytechnique Sousse with hands-on experience building production MERN applications and REST APIs. Passionate about AI and full-stack development.
             </p>
             <div class="hero-actions">
-              <a href="#projects" class="btn btn-primary">View My Work</a>
+              <!-- From Uiverse.io by Wendell47 -->
+              <a href="#projects" class="uiverse-btn hero-btn">
+                <span>View My Work</span>
+                <div class="hoverEffect">
+                  <div></div>
+                </div>
+              </a>
               <a href="mailto:oussema.gazzeh@polytechnicien.tn" class="btn btn-outline">Let's Talk</a>
             </div>
             <div class="hero-social">
@@ -314,8 +320,12 @@
           </div>
         </div>
         <div class="section-footer">
-          <a href="https://github.com/oussemagazzah" target="_blank" class="btn btn-secondary">
-            See More on GitHub <i class="fas fa-arrow-right"></i>
+          <!-- From Uiverse.io by Wendell47 -->
+          <a href="https://github.com/oussemagazzah" target="_blank" class="uiverse-btn">
+            <span>See More on GitHub <i class="fas fa-arrow-right"></i></span>
+            <div class="hoverEffect">
+              <div></div>
+            </div>
           </a>
         </div>
       </div>
@@ -436,20 +446,28 @@
             </div>
           </div>
           <form class="contact-form" id="contactForm">
-            <div class="form-group">
-              <input type="text" id="name" placeholder="Your Name" required />
+            <div class="form__group">
+              <input type="text" class="form__field" id="name" placeholder="Name" required />
+              <label class="form__label">Your Name</label>
             </div>
-            <div class="form-group">
-              <input type="email" id="email" placeholder="Your Email" required />
+            <div class="form__group">
+              <input type="email" class="form__field" id="email" placeholder="Email" required />
+              <label class="form__label">Your Email</label>
             </div>
-            <div class="form-group">
-              <input type="text" id="subject" placeholder="Subject" />
+            <div class="form__group">
+              <input type="text" class="form__field" id="subject" placeholder="Subject" />
+              <label class="form__label">Subject</label>
             </div>
-            <div class="form-group">
-              <textarea id="message" rows="5" placeholder="Your Message" required></textarea>
+            <div class="form__group">
+              <textarea class="form__field form__textarea" id="message" rows="5" placeholder="Message" required></textarea>
+              <label class="form__label">Your Message</label>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">
-              Send Message <i class="fas fa-paper-plane"></i>
+            <!-- From Uiverse.io by Wendell47 -->
+            <button type="submit" class="uiverse-btn">
+              <span>Send Message</span>
+              <div class="hoverEffect">
+                <div></div>
+              </div>
             </button>
           </form>
         </div>
