@@ -172,7 +172,7 @@ contactForm.addEventListener("submit", function (e) {
   const subject = document.getElementById("subject").value.trim() || "Portfolio Contact";
   const body = `Name: ${name}\nEmail: ${email}\n\n${message}`;
 
-  const mailtoLink = `mailto:oussema.gazzeh@polytechnicien.tn?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  const mailtoLink = `mailto:oussema.gazzeh@proton.me?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
   window.location.href = mailtoLink;
 
