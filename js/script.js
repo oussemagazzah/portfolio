@@ -1,4 +1,4 @@
-// Mobile menu
+// Hamburger menu
 const hamburger = document.querySelector(".hamburger");
 const navMenu = document.querySelector(".nav-menu");
 
@@ -17,11 +17,7 @@ document.querySelectorAll(".nav-link").forEach((n) =>
 // Navbar scroll effect
 window.addEventListener("scroll", () => {
   const navbar = document.querySelector(".navbar");
-  if (window.scrollY > 50) {
-    navbar.classList.add("scrolled");
-  } else {
-    navbar.classList.remove("scrolled");
-  }
+  navbar.classList.toggle("scrolled", window.scrollY > 50);
 });
 
 // Dark mode
@@ -75,27 +71,220 @@ function typeEffect() {
 
 typeEffect();
 
-// Scroll animations (Intersection Observer)
-const animateElements = document.querySelectorAll(
-  ".about-content, .skills-content, .project-grid, .timeline, .contact-content, .section-header"
-);
+// Scroll progress bar
+const progressBar = document.getElementById("scroll-progress");
+if (progressBar) {
+  window.addEventListener("scroll", () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = progress + "%";
+  });
+}
 
-const observer = new IntersectionObserver(
+// Back to top button
+const backToTop = document.getElementById("back-to-top");
+if (backToTop) {
+  window.addEventListener("scroll", () => {
+    backToTop.classList.toggle("visible", window.scrollY > 500);
+  });
+
+  backToTop.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+// Staggered card reveal
+const staggerObserver = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
-        observer.unobserve(entry.target);
+        const cards = entry.target.querySelectorAll(".project-card, .cert-card");
+        cards.forEach((card, i) => {
+          setTimeout(() => {
+            card.classList.add("revealed");
+          }, i * 100);
+        });
+        staggerObserver.unobserve(entry.target);
       }
     });
   },
   { threshold: 0.1 }
 );
 
-animateElements.forEach((el) => {
-  el.classList.add("fade-in");
-  observer.observe(el);
+document.querySelectorAll(".project-grid, .cert-grid").forEach((grid) => {
+  staggerObserver.observe(grid);
 });
+
+// Magnetic hover on social icons
+const magneticElements = document.querySelectorAll(
+  ".hero-social a, .contact-social a, .footer-social a"
+);
+
+magneticElements.forEach((el) => {
+  el.addEventListener("mousemove", (e) => {
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    el.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+  });
+
+  el.addEventListener("mouseleave", () => {
+    el.style.transform = "translate(0, 0)";
+  });
+});
+
+// 3D Mouse Tilt on hero image
+const heroWrapper = document.querySelector(".hero-image-wrapper");
+if (heroWrapper) {
+  const heroInner = heroWrapper.querySelector(".hero-image-inner");
+
+  heroWrapper.addEventListener("mousemove", (e) => {
+    const rect = heroWrapper.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -15;
+    const rotateY = ((x - centerX) / centerX) * 15;
+    heroInner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  });
+
+  heroWrapper.addEventListener("mouseleave", () => {
+    heroInner.style.transform = "rotateX(0deg) rotateY(0deg)";
+  });
+}
+
+// Particles canvas
+const canvas = document.getElementById("particles-canvas");
+if (canvas) {
+  const ctx = canvas.getContext("2d");
+  let particles = [];
+  let animationId;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  class Particle {
+    constructor() {
+      this.reset();
+    }
+
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 2 + 0.5;
+      this.speedX = (Math.random() - 0.5) * 0.5;
+      this.speedY = (Math.random() - 0.5) * 0.5;
+      this.opacity = Math.random() * 0.5 + 0.1;
+    }
+
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+
+      if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+    }
+
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 205, 66, ${this.opacity})`;
+      ctx.fill();
+    }
+  }
+
+  function initParticles() {
+    const count = Math.min(80, Math.floor((canvas.width * canvas.height) / 15000));
+    particles = Array.from({ length: count }, () => new Particle());
+  }
+
+  function connectParticles() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(255, 205, 66, ${0.08 * (1 - dist / 120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach((p) => {
+      p.update();
+      p.draw();
+    });
+    connectParticles();
+    animationId = requestAnimationFrame(animateParticles);
+  }
+
+  resizeCanvas();
+  initParticles();
+  animateParticles();
+
+  window.addEventListener("resize", () => {
+    resizeCanvas();
+    initParticles();
+  });
+}
+
+// Split-text character reveal
+const splitTexts = document.querySelectorAll(".split-text");
+
+const splitObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const text = entry.target;
+        const original = text.textContent;
+        text.textContent = "";
+        text.style.opacity = "1";
+        [...original].forEach((char, i) => {
+          const span = document.createElement("span");
+          span.className = "split-char";
+          span.textContent = char === " " ? "\u00A0" : char;
+          span.style.animationDelay = `${i * 0.035}s`;
+          text.appendChild(span);
+        });
+        splitObserver.unobserve(text);
+      }
+    });
+  },
+  { threshold: 0.5 }
+);
+
+splitTexts.forEach((el) => splitObserver.observe(el));
+
+// Scroll animations (IntersectionObserver)
+const animateElements = document.querySelectorAll(
+  ".fade-in, .fade-left, .fade-right, .fade-up"
+);
+
+const scrollObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        scrollObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.1 }
+);
+
+animateElements.forEach((el) => scrollObserver.observe(el));
 
 // Animate skill bars on scroll
 const skillBars = document.querySelectorAll(".skill-fill");
