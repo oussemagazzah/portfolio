@@ -4,26 +4,6 @@
   --primary: #ffcd42;
   --primary-dark: #e6b830;
   --primary-glow: rgba(255, 205, 66, 0.25);
-  --bg-primary: #ffffff;
-  --bg-alt: #f8f9fc;
-  --bg-card: #f4f4f4;
-  --text-color: #222222;
-  --text-muted: #6b7280;
-  --border-color: #e5e7eb;
-  --nav-bg: rgba(255, 255, 255, 0.72);
-  --nav-border: rgba(0, 0, 0, 0.06);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.12);
-  --radius: 12px;
-  --radius-sm: 8px;
-  --radius-full: 9999px;
-  --font-heading: 'Raleway', sans-serif;
-  --font-body: 'Inter', sans-serif;
-  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-[data-theme="dark"] {
   --bg-primary: #0a0a0a;
   --bg-alt: #111111;
   --bg-card: #1a1a1a;
@@ -35,6 +15,26 @@
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
   --shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.4);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-full: 9999px;
+  --font-heading: 'Raleway', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-alt: #f8f9fc;
+  --bg-card: #f4f4f4;
+  --text-color: #222222;
+  --text-muted: #6b7280;
+  --border-color: #e5e7eb;
+  --nav-bg: rgba(255, 255, 255, 0.72);
+  --nav-border: rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.12);
 }
 
 html { font-size: 100%; scroll-behavior: smooth; }

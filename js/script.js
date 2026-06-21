@@ -31,11 +31,9 @@ function switchTheme(e) {
 
 toggleSwitch.addEventListener("change", switchTheme);
 
-const currentTheme = localStorage.getItem("theme");
-if (currentTheme) {
-  document.documentElement.setAttribute("data-theme", currentTheme);
-  if (currentTheme === "dark") toggleSwitch.checked = true;
-}
+const currentTheme = localStorage.getItem("theme") || "dark";
+document.documentElement.setAttribute("data-theme", currentTheme);
+if (currentTheme === "dark") toggleSwitch.checked = true;
 
 // Auto year
 document.getElementById("datee").textContent = new Date().getFullYear();
