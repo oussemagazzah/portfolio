@@ -153,12 +153,23 @@ if (heroWrapper) {
   });
 }
 
-// Particles canvas
+// Particles canvas with mouse interaction
 const canvas = document.getElementById("particles-canvas");
 if (canvas) {
   const ctx = canvas.getContext("2d");
   let particles = [];
   let animationId;
+  let mouse = { x: null, y: null, radius: 150 };
+
+  document.addEventListener("mousemove", (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
+
+  document.addEventListener("mouseleave", () => {
+    mouse.x = null;
+    mouse.y = null;
+  });
 
   function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -173,18 +184,37 @@ if (canvas) {
     reset() {
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
-      this.size = Math.random() * 2 + 0.5;
+      this.size = Math.random() * 2.5 + 0.5;
       this.speedX = (Math.random() - 0.5) * 0.5;
       this.speedY = (Math.random() - 0.5) * 0.5;
-      this.opacity = Math.random() * 0.5 + 0.1;
+      this.opacity = Math.random() * 0.5 + 0.2;
     }
 
     update() {
+      if (mouse.x !== null && mouse.y !== null) {
+        const dx = mouse.x - this.x;
+        const dy = mouse.y - this.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < mouse.radius) {
+          const force = (mouse.radius - dist) / mouse.radius;
+          const angle = Math.atan2(dy, dx);
+          const pushX = Math.cos(angle) * force * 1.2;
+          const pushY = Math.sin(angle) * force * 1.2;
+          this.speedX -= pushX;
+          this.speedY -= pushY;
+        }
+      }
+
+      this.speedX *= 0.98;
+      this.speedY *= 0.98;
       this.x += this.speedX;
       this.y += this.speedY;
 
-      if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-      if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+      if (this.x < 0) { this.x = 0; this.speedX *= -1; }
+      if (this.x > canvas.width) { this.x = canvas.width; this.speedX *= -1; }
+      if (this.y < 0) { this.y = 0; this.speedY *= -1; }
+      if (this.y > canvas.height) { this.y = canvas.height; this.speedY *= -1; }
     }
 
     draw() {
@@ -201,14 +231,16 @@ if (canvas) {
   }
 
   function connectParticles() {
+    const maxDist = 150;
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
         const dx = particles[i].x - particles[j].x;
         const dy = particles[i].y - particles[j].y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 120) {
+        if (dist < maxDist) {
+          const alpha = 0.1 * (1 - dist / maxDist);
           ctx.beginPath();
-          ctx.strokeStyle = `rgba(255, 205, 66, ${0.08 * (1 - dist / 120)})`;
+          ctx.strokeStyle = `rgba(255, 205, 66, ${alpha})`;
           ctx.lineWidth = 0.5;
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
