@@ -215,10 +215,16 @@ if (canvas) {
       this.x += this.speedX;
       this.y += this.speedY;
 
-      if (this.x < 0) { this.x = 0; this.speedX *= -1; }
-      if (this.x > canvas.width) { this.x = canvas.width; this.speedX *= -1; }
-      if (this.y < 0) { this.y = 0; this.speedY *= -1; }
-      if (this.y > canvas.height) { this.y = canvas.height; this.speedY *= -1; }
+      if (this.x < 0 || this.x > canvas.width) {
+        this.speedX *= -1;
+        this.baseSpeedX *= -1;
+        this.x = this.x < 0 ? 0 : canvas.width;
+      }
+      if (this.y < 0 || this.y > canvas.height) {
+        this.speedY *= -1;
+        this.baseSpeedY *= -1;
+        this.y = this.y < 0 ? 0 : canvas.height;
+      }
     }
 
     draw() {
