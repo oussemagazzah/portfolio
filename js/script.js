@@ -163,8 +163,8 @@ if (canvas) {
   let morphTargets = [];
   let isMorphing = false;
   let morphPhase = 0;
-  const MORPH_DURATION = 120;
-  const HOLD_DURATION = 90;
+  const MORPH_DURATION = 250;
+  const HOLD_DURATION = 120;
   let morphTimer = 0;
 
   document.addEventListener("mousemove", (e) => {
@@ -216,7 +216,7 @@ if (canvas) {
     const raw = generateOGShape();
     if (raw.length < 20) return;
 
-    const angle = -Math.PI / 4;
+    const angle = 135 * Math.PI / 180;
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
     const cx = canvas.width * 0.18;
@@ -273,10 +273,10 @@ if (canvas) {
       if (isMorphing && this.morphTx !== null) {
         const dx = this.morphTx - this.x;
         const dy = this.morphTy - this.y;
-        this.speedX += dx * 0.03;
-        this.speedY += dy * 0.03;
-        this.speedX *= 0.92;
-        this.speedY *= 0.92;
+        this.speedX += dx * 0.015;
+        this.speedY += dy * 0.015;
+        this.speedX *= 0.96;
+        this.speedY *= 0.96;
       } else {
         if (mouse.x !== null && mouse.y !== null) {
           const dx = mouse.x - this.x;
