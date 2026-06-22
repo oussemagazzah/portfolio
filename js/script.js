@@ -216,14 +216,22 @@ if (canvas) {
     const raw = generateOGShape();
     if (raw.length < 20) return;
 
-    const cx = canvas.width / 2;
-    const cy = canvas.height / 2;
-    const scale = Math.min(canvas.width * 0.35, canvas.height * 0.35) / (Math.min(raw.reduce((m, p) => Math.max(m, Math.abs(p.x)), 0) || 1));
+    const angle = -Math.PI / 4;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    const cx = canvas.width * 0.18;
+    const cy = canvas.height * 0.15;
+    const maxExtent = raw.reduce((m, p) => Math.max(m, Math.abs(p.x), Math.abs(p.y)), 0) || 1;
+    const scale = Math.min(canvas.width * 0.22, canvas.height * 0.22) / maxExtent;
 
-    const targets = raw.map((p) => ({
-      x: cx + p.x * scale + (Math.random() - 0.5) * 6,
-      y: cy + p.y * scale + (Math.random() - 0.5) * 6,
-    }));
+    const targets = raw.map((p) => {
+      const rx = p.x * scale;
+      const ry = p.y * scale;
+      return {
+        x: cx + rx * cos - ry * sin + (Math.random() - 0.5) * 6,
+        y: cy + rx * sin + ry * cos + (Math.random() - 0.5) * 6,
+      };
+    });
 
     morphTargets = targets;
     for (let i = 0; i < particles.length; i++) {
@@ -309,7 +317,7 @@ if (canvas) {
   }
 
   function initParticles() {
-    const count = Math.min(200, Math.floor((canvas.width * canvas.height) / 7000));
+    const count = 100;
     particles = Array.from({ length: count }, () => new Particle());
   }
 
