@@ -185,8 +185,12 @@ if (canvas) {
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
       this.size = Math.random() * 2.5 + 0.5;
-      this.speedX = (Math.random() - 0.5) * 0.5;
-      this.speedY = (Math.random() - 0.5) * 0.5;
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 0.4 + 0.2;
+      this.baseSpeedX = Math.cos(angle) * speed;
+      this.baseSpeedY = Math.sin(angle) * speed;
+      this.speedX = this.baseSpeedX;
+      this.speedY = this.baseSpeedY;
       this.opacity = Math.random() * 0.5 + 0.2;
     }
 
@@ -206,8 +210,8 @@ if (canvas) {
         }
       }
 
-      this.speedX *= 0.98;
-      this.speedY *= 0.98;
+      this.speedX += (this.baseSpeedX - this.speedX) * 0.02;
+      this.speedY += (this.baseSpeedY - this.speedY) * 0.02;
       this.x += this.speedX;
       this.y += this.speedY;
 
