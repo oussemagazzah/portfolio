@@ -153,13 +153,19 @@ if (heroWrapper) {
   });
 }
 
-// Particles canvas with mouse interaction
+// Particles canvas with mouse interaction and OG morph
 const canvas = document.getElementById("particles-canvas");
 if (canvas) {
   const ctx = canvas.getContext("2d");
   let particles = [];
   let animationId;
   let mouse = { x: null, y: null, radius: 150 };
+  let morphTargets = [];
+  let isMorphing = false;
+  let morphPhase = 0;
+  const MORPH_DURATION = 120;
+  const HOLD_DURATION = 90;
+  let morphTimer = 0;
 
   document.addEventListener("mousemove", (e) => {
     mouse.x = e.clientX;
@@ -171,6 +177,64 @@ if (canvas) {
     mouse.y = null;
   });
 
+  function generateOGShape() {
+    const offscreen = document.createElement("canvas");
+    const offCtx = offscreen.getContext("2d");
+    const scale = Math.min(canvas.width, canvas.height) / 600;
+    const fontSize = Math.max(160, Math.floor(200 * scale));
+    offscreen.width = fontSize * 3;
+    offscreen.height = fontSize * 1.8;
+
+    offCtx.fillStyle = "#fff";
+    offCtx.font = `bold ${fontSize}px "Raleway", sans-serif`;
+    offCtx.textAlign = "center";
+    offCtx.textBaseline = "middle";
+    offCtx.fillText("OG", offscreen.width / 2, offscreen.height / 2);
+
+    const imageData = offCtx.getImageData(0, 0, offscreen.width, offscreen.height);
+    const data = imageData.data;
+    const positions = [];
+
+    const step = 3;
+    for (let y = 0; y < offscreen.height; y += step) {
+      for (let x = 0; x < offscreen.width; x += step) {
+        const i = (y * offscreen.width + x) * 4;
+        if (data[i] > 128) {
+          positions.push({
+            x: x - offscreen.width / 2,
+            y: y - offscreen.height / 2,
+          });
+        }
+      }
+    }
+    return positions;
+  }
+
+  function getMorphPositions() {
+    const raw = generateOGShape();
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const scale = Math.min(canvas.width, canvas.height) / 800;
+
+    return raw.map((p) => ({
+      x: cx + p.x * scale,
+      y: cy + p.y * scale,
+    }));
+  }
+
+  function triggerMorph() {
+    const targets = getMorphPositions();
+    if (targets.length < 10) return;
+    morphTargets = targets;
+    for (let i = 0; i < particles.length; i++) {
+      const t = morphTargets[i % morphTargets.length];
+      particles[i].morphTx = t.x + (Math.random() - 0.5) * 10;
+      particles[i].morphTy = t.y + (Math.random() - 0.5) * 10;
+    }
+    isMorphing = true;
+    morphPhase = 0;
+  }
+
   function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -178,6 +242,8 @@ if (canvas) {
 
   class Particle {
     constructor() {
+      this.morphTx = null;
+      this.morphTy = null;
       this.reset();
     }
 
@@ -195,23 +261,29 @@ if (canvas) {
     }
 
     update() {
-      if (mouse.x !== null && mouse.y !== null) {
-        const dx = mouse.x - this.x;
-        const dy = mouse.y - this.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < mouse.radius) {
-          const force = (mouse.radius - dist) / mouse.radius;
-          const angle = Math.atan2(dy, dx);
-          const pushX = Math.cos(angle) * force * 1.2;
-          const pushY = Math.sin(angle) * force * 1.2;
-          this.speedX -= pushX;
-          this.speedY -= pushY;
+      if (isMorphing && this.morphTx !== null) {
+        const dx = this.morphTx - this.x;
+        const dy = this.morphTy - this.y;
+        this.speedX += dx * 0.03;
+        this.speedY += dy * 0.03;
+        this.speedX *= 0.92;
+        this.speedY *= 0.92;
+      } else {
+        if (mouse.x !== null && mouse.y !== null) {
+          const dx = mouse.x - this.x;
+          const dy = mouse.y - this.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < mouse.radius) {
+            const force = (mouse.radius - dist) / mouse.radius;
+            const angle = Math.atan2(dy, dx);
+            this.speedX -= Math.cos(angle) * force * 1.2;
+            this.speedY -= Math.sin(angle) * force * 1.2;
+          }
         }
+        this.speedX += (this.baseSpeedX - this.speedX) * 0.02;
+        this.speedY += (this.baseSpeedY - this.speedY) * 0.02;
       }
 
-      this.speedX += (this.baseSpeedX - this.speedX) * 0.02;
-      this.speedY += (this.baseSpeedY - this.speedY) * 0.02;
       this.x += this.speedX;
       this.y += this.speedY;
 
@@ -262,6 +334,22 @@ if (canvas) {
 
   function animateParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (isMorphing) {
+      morphPhase++;
+      if (morphPhase > MORPH_DURATION + HOLD_DURATION) {
+        isMorphing = false;
+        morphPhase = 0;
+        particles.forEach((p) => { p.morphTx = null; p.morphTy = null; });
+      }
+    } else {
+      morphTimer++;
+      if (morphTimer > 480 + Math.random() * 240) {
+        morphTimer = 0;
+        triggerMorph();
+      }
+    }
+
     particles.forEach((p) => {
       p.update();
       p.draw();
