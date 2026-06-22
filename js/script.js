@@ -226,12 +226,12 @@ if (canvas) {
   }
 
   function initParticles() {
-    const count = Math.min(80, Math.floor((canvas.width * canvas.height) / 15000));
+    const count = Math.min(150, Math.floor((canvas.width * canvas.height) / 8000));
     particles = Array.from({ length: count }, () => new Particle());
   }
 
   function connectParticles() {
-    const maxDist = 150;
+    const maxDist = 160;
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
         const dx = particles[i].x - particles[j].x;
