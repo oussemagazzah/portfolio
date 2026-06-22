@@ -180,13 +180,15 @@ if (canvas) {
   function generateOGShape() {
     const offscreen = document.createElement("canvas");
     const offCtx = offscreen.getContext("2d");
-    const scale = Math.min(canvas.width, canvas.height) / 600;
-    const fontSize = Math.max(160, Math.floor(200 * scale));
-    offscreen.width = fontSize * 3;
-    offscreen.height = fontSize * 1.8;
+    const size = Math.min(canvas.width, canvas.height) * 0.6;
+    const fontSize = Math.floor(size * 0.5);
+    offscreen.width = Math.ceil(fontSize * 3.2);
+    offscreen.height = Math.ceil(fontSize * 1.6);
 
+    offCtx.fillStyle = "#000";
+    offCtx.fillRect(0, 0, offscreen.width, offscreen.height);
     offCtx.fillStyle = "#fff";
-    offCtx.font = `bold ${fontSize}px "Raleway", sans-serif`;
+    offCtx.font = `900 ${fontSize}px "Inter", "Raleway", sans-serif`;
     offCtx.textAlign = "center";
     offCtx.textBaseline = "middle";
     offCtx.fillText("OG", offscreen.width / 2, offscreen.height / 2);
@@ -195,11 +197,11 @@ if (canvas) {
     const data = imageData.data;
     const positions = [];
 
-    const step = 3;
+    const step = 2;
     for (let y = 0; y < offscreen.height; y += step) {
       for (let x = 0; x < offscreen.width; x += step) {
         const i = (y * offscreen.width + x) * 4;
-        if (data[i] > 128) {
+        if (data[i] > 200) {
           positions.push({
             x: x - offscreen.width / 2,
             y: y - offscreen.height / 2,
@@ -210,26 +212,25 @@ if (canvas) {
     return positions;
   }
 
-  function getMorphPositions() {
+  function triggerMorph() {
     const raw = generateOGShape();
+    if (raw.length < 20) return;
+
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
-    const scale = Math.min(canvas.width, canvas.height) / 800;
+    const scale = Math.min(canvas.width * 0.35, canvas.height * 0.35) / (Math.min(raw.reduce((m, p) => Math.max(m, Math.abs(p.x)), 0) || 1));
 
-    return raw.map((p) => ({
-      x: cx + p.x * scale,
-      y: cy + p.y * scale,
+    const targets = raw.map((p) => ({
+      x: cx + p.x * scale + (Math.random() - 0.5) * 6,
+      y: cy + p.y * scale + (Math.random() - 0.5) * 6,
     }));
-  }
 
-  function triggerMorph() {
-    const targets = getMorphPositions();
-    if (targets.length < 10) return;
     morphTargets = targets;
     for (let i = 0; i < particles.length; i++) {
-      const t = morphTargets[i % morphTargets.length];
-      particles[i].morphTx = t.x + (Math.random() - 0.5) * 10;
-      particles[i].morphTy = t.y + (Math.random() - 0.5) * 10;
+      const idx = Math.floor((i / particles.length) * targets.length);
+      const t = targets[idx];
+      particles[i].morphTx = t.x + (Math.random() - 0.5) * 4;
+      particles[i].morphTy = t.y + (Math.random() - 0.5) * 4;
     }
     isMorphing = true;
     morphPhase = 0;
@@ -308,7 +309,7 @@ if (canvas) {
   }
 
   function initParticles() {
-    const count = Math.min(150, Math.floor((canvas.width * canvas.height) / 8000));
+    const count = Math.min(200, Math.floor((canvas.width * canvas.height) / 7000));
     particles = Array.from({ length: count }, () => new Particle());
   }
 
@@ -344,7 +345,7 @@ if (canvas) {
       }
     } else {
       morphTimer++;
-      if (morphTimer > 480 + Math.random() * 240) {
+      if (morphTimer > 1800 + Math.random() * 300) {
         morphTimer = 0;
         triggerMorph();
       }
