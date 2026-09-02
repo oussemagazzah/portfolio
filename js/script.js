@@ -39,7 +39,7 @@ if (currentTheme === "dark") toggleSwitch.checked = true;
 document.getElementById("datee").textContent = new Date().getFullYear();
 
 // Typewriter effect
-const words = ["Software Engineer", "Full stack developer", "Full-Stack Developer"];
+const words = ["AI/ML Engineer", "Full-Stack Developer", "Data Scientist"];
 let wordIndex = 0;
 let charIndex = 0;
 let isDeleting = false;
