@@ -326,23 +326,29 @@ const scrollObserver = new IntersectionObserver(
 
 animateElements.forEach((el) => scrollObserver.observe(el));
 
-// Animate skill bars on scroll
-const skillBars = document.querySelectorAll(".skill-fill");
+// Animate skill chips on scroll
+const skillsContainer = document.querySelector(".skills-content");
 
-const skillObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const width = entry.target.getAttribute("data-width");
-        entry.target.style.width = width + "%";
-        skillObserver.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.3 }
-);
+if (skillsContainer) {
+  const chipObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const chips = entry.target.querySelectorAll(".skill-chip");
+          chips.forEach((chip, i) => {
+            setTimeout(() => {
+              chip.classList.add("chip-visible");
+            }, 60 * i);
+          });
+          chipObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.2 }
+  );
 
-skillBars.forEach((bar) => skillObserver.observe(bar));
+  chipObserver.observe(skillsContainer);
+}
 
 // Animated counters
 const statNumbers = document.querySelectorAll(".stat-number");
